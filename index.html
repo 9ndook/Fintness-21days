@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>تحدي الـ 21 يوم - النسخة التفاعلية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #f9f9f9, #e0f7fa);
+      color: #2c3e50;
+    }
+    header {
+      text-align: center;
+      padding: 30px 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2em;
+      color: #0288d1;
+    }
+    .progress-ring {
+      width: 100px;
+      height: 100px;
+      margin: 5px auto;
+      position: relative;
+    }
+    .ring-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: scale(1.05); }
+    .card.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .card h2 { margin: 10px 0; }
+    .card .level {
+      font-size: 0.9em;
+      color: #757575;
+    }
+    .details-box {
+      display: none;
+      background: white;
+      padding: 30px;
+      margin: 20px auto;
+      border-radius: 16px;
+      max-width: 800px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .details-box video, .details-box img {
+      width: 100%;
+      border-radius: 12px;
+      margin: 10px 0;
+    }
+    .btn-complete {
+      margin: 20px 0;
+      padding: 10px 25px;
+      background-color: #0288d1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      resize: vertical;
+    }
+    .close-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+    padding: 10px;
+  }
+  header h1 {
+    font-size: 1.4em;
+  }
+  .card {
+    padding: 12px;
+  }
+  .details-box {
+    padding: 20px;
+    margin: 10px;
+  }
+  textarea {
+    height: 80px;
+  }
+  #finalCongrats {
+    font-size: 1em;
+    padding: 20px;
+    margin: 20px auto;
+  }
+}
+
+.card.border-easy::before,
+.card.border-medium::before,
+.card.border-hard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 100%;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.card.border-easy::before {
+  background-color: #2196f3;
+}
+
+.card.border-medium::before {
+  background-color: #ff9800;
+}
+
+.card.border-hard::before {
+  background-color: #f44336;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+#exerciseLibrary .border-easy {
+  position: relative;
+}
+#exerciseLibrary .border-easy::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  background-color: #2196f3;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+#exerciseLibrary .border-medium {
+  position: relative;
+}
+#exerciseLibrary .border-medium::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  background-color: #ff9800;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+#exerciseLibrary .border-hard {
+  position: relative;
+}
+#exerciseLibrary .border-hard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  background-color: #f44336;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.smart-panel-card {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  width: 240px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  font-family: 'Cairo', sans-serif;
+  z-index: 999;
+}
+.smart-panel-card h3 {
+  margin-top: 0;
+  font-size: 1em;
+  color: #0288d1;
+}
+.smart-panel-card div {
+  margin: 8px 0;
+}
+.smart-panel-card hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 12px 0;
+}
+.back-btn {
+  background-color: #0288d1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+.back-btn:hover {
+  background-color: #0277bd;
+}
+
+.back-btn, .reset-btn {
+  font-family: 'Cairo', sans-serif;
+}
+
+.reset-btn .btn-content,
+.back-btn .btn-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Cairo', sans-serif;
+}
+.reset-btn svg,
+.back-btn svg {
+  fill: white;
+}
+
+@media (max-width: 768px) {
+  .smart-panel-card {
+    position: fixed;
+    left: -280px;
+    transition: left 0.3s ease;
+  }
+  .smart-panel-card.open {
+    left: 10px;
+  }
+  .sidebar-toggle {
+    display: block;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1001;
+    background-color: #0288d1;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+  }
+}
+@media (min-width: 769px) {
+  .sidebar-toggle {
+    display: none;
+  }
+}
+
+.notice-box {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.95em;
+  text-align: center;
+  margin: 30px auto;
+  max-width: 600px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+</style>
+<style>
+button {
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0277bd !important;
+}
+
+/* تحسين النصوص داخل البطاقات */
+#exerciseLibrary p {
+  color: #004d80;
+  font-size: 0.95em;
+}
+
+/* تحسين الفواصل */
+#exerciseLibrary div {
+  border-bottom: 1px solid #b3e5fc;
+}
+
+/* تحسين العناوين */
+#exerciseLibrary h3 {
+  color: #01579b !important;
+  font-weight: bold;
+}
+
+#exerciseLibrary li {
+  color: #004d80;
+}
+</style></head>
+<body>
+<button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">☰</button>
+<div class="smart-panel-card" id="smartPanel">
+<h3>📊 حالتك الآن</h3>
+<div id="currentDay">✅ وصلت إلى: -</div>
+<div id="progressValue">📈 إنجازك: 0%</div>
+<div id="availableDays">🔓 أيام جاهزة: -</div>
+<hr/>
+<div id="randomQuote">💬 التحفيز قادم...</div>
+<hr/>
+<div><strong>📝 ملاحظتك الأخيرة:</strong></div>
+<div id="lastNote">—</div>
+<hr/>
+<button class="back-btn" onclick="scrollToGrid()">▶️ ارجع للتمرين</button>
+<div style="margin-top: 20px; font-size: 0.85em; color: #666;">
+    🛍️ متجر صندوق<br/>
+    🤍 معك خطوة بخطوة
+  </div>
+</div>
+<header>
+<p style="margin: 5px 0; font-size: 1.1em; color:#555;">🛍️ متجر صندوق</p>
+<h1>🔥 تحدي الـ 21 يوم - النسخة التفاعلية</h1><p style="margin-top: 10px; font-size: 1em; color: #455a64;">🧠 عن التمارين: تم تصميم التمارين لتناسب جميع المستويات، بدون أدوات، وتركّز على التحفيز والمرونة واللياقة بشكل تدريجي.</p><p style="margin-top: 5px; font-size: 0.95em; color: #0288d1;">⏳ لماذا 21 يومًا؟ لأنها المدة المثالية علميًا لبناء عادة جديدة وتحقيق نتائج فعلية بدون ضغط أو ملل.</p>
+<div class="progress-ring">
+<svg height="100" width="100">
+<circle cx="50" cy="50" fill="transparent" r="45" stroke="#ddd" stroke-width="10"></circle>
+<circle cx="50" cy="50" fill="transparent" id="progressCircle" r="45" stroke="#0288d1" stroke-dasharray="282.6" stroke-dashoffset="282.6" stroke-width="10" transform="rotate(-90 50 50)"></circle>
+</svg>
+<div class="ring-text" id="progressText">0%</div>
+</div><p style="text-align: center; margin: 10px auto 5px auto; color: #555; font-size: 0.95em;">👇 اضغط على اليوم المناسب وابدأ التمرين. بعد الانتهاء، اضغط على ✔️ أتممت التمرين؟ لتسجيل تقدمك.</p>
+</header>
+<div style="max-width: 600px; margin: 20px auto; text-align: center;">
+<div style="background: #ddd; border-radius: 30px; overflow: hidden; position: relative;">
+<div id="progressBar" style="width:0%; height: 20px; background-color: #0288d1;"></div>
+<div id="progressPercent" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); color: white; font-size: 0.85em; line-height: 20px;">0%</div>
+</div>
+</div>
+<p class="notice-box" style="font-size: 0.9em; color: #777; text-align: center; margin: 30px auto 10px auto; max-width: 600px;">
+  📄 هذا الملف تم تصميمه بحب لك، لا تنسَ أن مشاركته بدون إذن يعرضك للمساءلة ويقلل من تقدير الجهد. شكراً لدعمك الأصيل ❤️
+</p>
+<button onclick="resetProgress()" style="margin: 20px auto 0 auto; display: block; background-color: #0288d1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">🔄 ابدأ من جديد</button>
+<div class="grid" id="daysGrid"></div><button onclick="toggleLibrary()" style="display:block;margin:20px auto;padding:10px 20px;background:#0288d1;color:white;border:none;border-radius:8px;cursor:pointer; font-family: inherit; font-weight: bold;">📖 عرض/إخفاء مكتبة التمارين</button><div id="exerciseLibrary" style="display:none;max-width:1000px;margin:40px auto;padding:20px;background:#fff;border-radius:16px;box-shadow:0 4px 10px rgba(0,0,0,0.1);"><h2 style="color: #0288d1;">📚 مكتبة التمارين</h2><div class="border-easy" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 1</h3><p style="; color: #004d80;">🔸 March in Place – 40 ثانية – المشي في المكان برفع الركبتين وتحريك الذراعين</p><p style="; color: #004d80;">🔸 Arm Circles – 30 ثانية – لفّ الذراعين للأمام ثم للخلف بشكل دائري</p></div><div class="border-easy" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 2</h3><p style="; color: #004d80;">🔸 Side Steps – 30 ثانية – خطوات جانبية بالتناوب مع ثني الركبتين</p><p style="; color: #004d80;">🔸 Wall Shoulder Taps – 10 مرات لكل يد – لمس الكتف المعاكس من وضعية الجدار</p></div><div class="border-easy" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 3</h3><p style="; color: #004d80;">🔸 Deep Breathing with Arm Raise – 6 مرات – شهيق مع رفع الذراعين للأعلى وزفير عند إنزالهم</p><p style="; color: #004d80;">🔸 Neck Rolls – 20 ثانية – لف الرأس ببطء دائريًا لتخفيف شد الرقبة</p></div><div class="border-easy" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 4</h3><p style="; color: #004d80;">🔸 Wall Push-Ups – 15 تكرار – دفع الجسم عن الجدار بثبات</p><p style="; color: #004d80;">🔸 Calf Raises – 20 تكرار – رفع الكعبين عن الأرض والعودة ببطء</p></div><div class="border-easy" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 5</h3><p style="; color: #004d80;">🔸 Light Walking in Place – 3 دقائق – مشي خفيف مع تحريك اليدين</p><p style="; color: #004d80;">🔸 Box Breathing – 1 دقيقة – تنفس رباعي منظم لشحن الطاقة</p></div><div class="border-easy" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 6</h3><p style="; color: #004d80;">🔸 Single-leg Balance – 30 ثانية لكل رجل – الوقوف على رجل واحدة بثبات</p><p style="; color: #004d80;">🔸 Heel-to-Toe Walk – 1 دقيقة – المشي ببطء بوضع الكعب على الأصابع</p></div><div class="border-easy" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 7</h3><p style="; color: #004d80;">🔸 Standing Side Stretch – 20 ثانية لكل جهة – تمدد جانبي بذراع مرفوعة</p><p style="; color: #004d80;">🔸 Seated Forward Fold – 30 ثانية – انحناء للأمام من وضعية الجلوس</p></div><div class="border-medium" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 8</h3><p style="; color: #004d80;">🔸 Jumping Jacks – 30 ثانية – قفزات بفتح الذراعين والساقين معًا</p><p style="; color: #004d80;">🔸 Standing Knee Lifts – 20 مرة – رفع الركبة نحو الصدر بالتبادل مع اليد المعاكسة</p></div><div class="border-medium" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 9</h3><p style="; color: #004d80;">🔸 Crunches – 15 تكرار – تمرين لعضلات البطن مع رفع الكتفين للأعلى</p><p style="; color: #004d80;">🔸 Leg Raises – 10 تكرارات – رفع الساقين مستقيمة أثناء الاستلقاء</p></div><div class="border-medium" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 10</h3><p style="; color: #004d80;">🔸 Child’s Pose – 30 ثانية – جلوس مع تمدد الذراعين للأمام وانحناء الجذع</p><p style="; color: #004d80;">🔸 Cat-Cow Stretch – 8 مرات – تمدد العمود الفقري للأعلى والأسفل</p></div><div class="border-medium" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 11</h3><p style="; color: #004d80;">🔸 Side Plank – 20 ثانية لكل جهة – وضعية بلانك جانبية على الكوع والقدم</p><p style="; color: #004d80;">🔸 Single-leg Reach – 10 مرات لكل ساق – الانحناء نحو الأرض على رجل واحدة</p></div><div class="border-medium" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 12</h3><p style="; color: #004d80;">🔸 Mountain Climbers – 30 ثانية – ركض سريع مع دفع الركبتين نحو الصدر في وضعية بلانك</p><p style="; color: #004d80;">🔸 High Knees – 30 ثانية – رفع الركبتين عاليًا بسرعة متوسطة</p></div><div class="border-medium" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 13</h3><p style="; color: #004d80;">🔸 Walking Meditation – 3 دقائق – مشي بطيء مع تركيز على التنفس</p><p style="; color: #004d80;">🔸 Shoulder Rolls – 30 ثانية – لف الكتفين للأمام والخلف</p></div><div class="border-medium" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 14</h3><p style="; color: #004d80;">🔸 Butterfly Stretch – 30 ثانية – جلوس مع التصاق باطن القدمين وشد الركبتين للأسفل</p><p style="; color: #004d80;">🔸 Spinal Twist – 20 ثانية لكل جهة – الاستلقاء مع لف الجزء السفلي من الجسم إلى جانب معاكس</p></div><div class="border-hard" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 15</h3><p style="; color: #004d80;">🔸 Burpees – 10 مرات – نزول ثم قفزة سريعة مع رفع اليدين</p><p style="; color: #004d80;">🔸 Skaters – 30 ثانية – قفزات جانبية مع لمس الأرض</p></div><div class="border-hard" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 16</h3><p style="; color: #004d80;">🔸 Incline Push-Ups – 12 تكرار – تمرين ضغط بزاوية باستخدام كرسي</p><p style="; color: #004d80;">🔸 Plank Shoulder Taps – 20 تكرار – ملامسة الكتف المعاكس في وضعية بلانك</p></div><div class="border-hard" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 17</h3><p style="; color: #004d80;">🔸 Jump Lunges – 10 لكل رجل – قفزات بتبديل القدمين في وضعية الطعن</p><p style="; color: #004d80;">🔸 Push-up to Downward Dog – 8 مرات – دمج تمرين الضغط مع تمدد الكتف</p></div><div class="border-hard" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 18</h3><p style="; color: #004d80;">🔸 Lizard Stretch – 30 ثانية لكل جهة – فتح الورك مع تمدد الساق الخلفية</p><p style="; color: #004d80;">🔸 Seated Twist – 20 ثانية لكل جهة – لف الجذع من وضعية الجلوس</p></div><div class="border-hard" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 19</h3><p style="; color: #004d80;">🔸 Single-leg Deadlift – 10 لكل رجل – انحناء على رجل واحدة نحو الأرض مع مد الذراع</p><p style="; color: #004d80;">🔸 Clock Reach – 1 دقيقة – لمس مواقع تخيلية على شكل ساعة أثناء الوقوف</p></div><div class="border-hard" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 20</h3><p style="; color: #004d80;">🔸 Box Breathing – 2 دقائق – تنفس منظم بأربع مراحل متساوية</p><p style="; color: #004d80;">🔸 Forward Fold – 30 ثانية – انحناء للأمام من وضعية الوقوف</p></div><div class="border-hard" style="background: #e1f5fe;padding:15px;margin-bottom:20px;border-radius:12px;"><h3 style="color:#01579b;">اليوم 21</h3><p style="; color: #004d80;">🔸 Shadow Boxing – 1 دقيقة × 3 جولات – لكمات هوائية سريعة مع حركة قدمين</p><p style="; color: #004d80;">🔸 Full-body Plank Hold – 30 ثانية – ثبات كامل في وضعية بلانك</p></div></div>
+<div class="details-box" id="detailsBox"></div>
+<script>
+    const TOTAL_DAYS = 21;
+    const detailsBox = document.getElementById("detailsBox");
+    const progressCircle = document.getElementById("progressCircle");
+    const progressText = document.getElementById("progressText");
+    const daysGrid = document.getElementById("daysGrid");
+
+    const dayDetails = {
+      1: { title: "انطلاقة الحماس", exercises: [ { name: "March in Place", time: "40 ثانية", desc: "المشي في المكان برفع الركبتين وتحريك الذراعين" }, { name: "Arm Circles", time: "30 ثانية", desc: "لفّ الذراعين للأمام ثم للخلف بشكل دائري" } ], benefit: "تنشيط القلب والكتفين برفق", note: "الخطوة الأولى هي الأقوى!" },
+      2: { title: "حيوية الصباح", exercises: [ { name: "Side Steps", time: "30 ثانية", desc: "خطوات جانبية بالتناوب مع ثني الركبتين" }, { name: "Wall Shoulder Taps", time: "10 مرات لكل يد", desc: "لمس الكتف المعاكس من وضعية الجدار" } ], benefit: "تحسين التوازن وتنشيط الجذع", note: "ابدأ يومك بإنجاز، ولو كان صغيرًا." },
+      3: { title: "تنفّس وتمدّد", exercises: [ { name: "Deep Breathing with Arm Raise", time: "6 مرات", desc: "شهيق مع رفع الذراعين للأعلى وزفير عند إنزالهم" }, { name: "Neck Rolls", time: "20 ثانية", desc: "لف الرأس ببطء دائريًا لتخفيف شد الرقبة" } ], benefit: "راحة ذهنية وتحرير الرقبة", note: "الهدوء هو بداية القوة." },
+      4: { title: "عضلاتك تستيقظ", exercises: [ { name: "Wall Push-Ups", time: "15 تكرار", desc: "دفع الجسم عن الجدار بثبات" }, { name: "Calf Raises", time: "20 تكرار", desc: "رفع الكعبين عن الأرض والعودة ببطء" } ], benefit: "تقوية الذراع والساق بدون معدات", note: "قوتك تبدأ من الجدران!" },
+      5: { title: "راحة متحركة", exercises: [ { name: "Light Walking in Place", time: "3 دقائق", desc: "مشي خفيف مع تحريك اليدين" }, { name: "Box Breathing", time: "1 دقيقة", desc: "تنفس رباعي منظم لشحن الطاقة" } ], benefit: "تحفيز الجسم بدون تعب", note: "حتى الراحة يمكن أن تكون إنتاجية." },
+      6: { title: "توازن البداية", exercises: [ { name: "Single-leg Balance", time: "30 ثانية لكل رجل", desc: "الوقوف على رجل واحدة بثبات" }, { name: "Heel-to-Toe Walk", time: "1 دقيقة", desc: "المشي ببطء بوضع الكعب على الأصابع" } ], benefit: "تقوية المفاصل والتركيز", note: "من يتوازن، ينهض دائمًا." },
+      7: { title: "تمدد الأحد", exercises: [ { name: "Standing Side Stretch", time: "20 ثانية لكل جهة", desc: "تمدد جانبي بذراع مرفوعة" }, { name: "Seated Forward Fold", time: "30 ثانية", desc: "انحناء للأمام من وضعية الجلوس" } ], benefit: "مرونة عضلية ونهاية مريحة للأسبوع", note: "كافئ نفسك بالتمدد." },
+      8: { title: "تسخين العضلات", exercises: [ { name: "Jumping Jacks", time: "30 ثانية", desc: "قفزات بفتح الذراعين والساقين معًا" }, { name: "Standing Knee Lifts", time: "20 مرة", desc: "رفع الركبة نحو الصدر بالتبادل مع اليد المعاكسة" } ], benefit: "تسريع الدورة الدموية وتحضير الجسم للحركة", note: "الطاقة تبدأ بالحركة." },
+      9: { title: "قوة البطن", exercises: [ { name: "Crunches", time: "15 تكرار", desc: "تمرين لعضلات البطن مع رفع الكتفين للأعلى" }, { name: "Leg Raises", time: "10 تكرارات", desc: "رفع الساقين مستقيمة أثناء الاستلقاء" } ], benefit: "تقوية عضلات البطن وتحسين الثبات", note: "مركز القوة يبدأ من البطن." },
+      10: { title: "استرخاء نشط", exercises: [ { name: "Child’s Pose", time: "30 ثانية", desc: "جلوس مع تمدد الذراعين للأمام وانحناء الجذع" }, { name: "Cat-Cow Stretch", time: "8 مرات", desc: "تمدد العمود الفقري للأعلى والأسفل" } ], benefit: "تحسين مرونة الظهر وتخفيف التوتر", note: "استمتع بالحركة بلطف." },
+      11: { title: "توازن وتحدي", exercises: [ { name: "Side Plank", time: "20 ثانية لكل جهة", desc: "وضعية بلانك جانبية على الكوع والقدم" }, { name: "Single-leg Reach", time: "10 مرات لكل ساق", desc: "الانحناء نحو الأرض على رجل واحدة" } ], benefit: "تطوير الثبات والقدرة على التحكم", note: "التوازن يعكس قوتك الداخلية." },
+      12: { title: "تفجير الطاقة", exercises: [ { name: "Mountain Climbers", time: "30 ثانية", desc: "ركض سريع مع دفع الركبتين نحو الصدر في وضعية بلانك" }, { name: "High Knees", time: "30 ثانية", desc: "رفع الركبتين عاليًا بسرعة متوسطة" } ], benefit: "رفع اللياقة وحرق الدهون", note: "كل قطرة عرق تعني أنك تقترب." },
+      13: { title: "راحة ذكية", exercises: [ { name: "Walking Meditation", time: "3 دقائق", desc: "مشي بطيء مع تركيز على التنفس" }, { name: "Shoulder Rolls", time: "30 ثانية", desc: "لف الكتفين للأمام والخلف" } ], benefit: "تصفية الذهن وتحفيز التعافي", note: "الهدوء جزء من التمرين." },
+      14: { title: "تمدد عميق", exercises: [ { name: "Butterfly Stretch", time: "30 ثانية", desc: "جلوس مع التصاق باطن القدمين وشد الركبتين للأسفل" }, { name: "Spinal Twist", time: "20 ثانية لكل جهة", desc: "الاستلقاء مع لف الجزء السفلي من الجسم إلى جانب معاكس" } ], benefit: "إراحة العمود الفقري وتقليل التشنج", note: "جسمك يستحق هذا." },
+      15: { title: "حرق سريع", exercises: [ { name: "Burpees", time: "10 مرات", desc: "نزول ثم قفزة سريعة مع رفع اليدين" }, { name: "Skaters", time: "30 ثانية", desc: "قفزات جانبية مع لمس الأرض" } ], benefit: "رفع النبض وحرق الدهون بقوة", note: "اجعل كل حركة ترفعك للأعلى!" },
+      16: { title: "قوة الجزء العلوي", exercises: [ { name: "Incline Push-Ups", time: "12 تكرار", desc: "تمرين ضغط بزاوية باستخدام كرسي" }, { name: "Plank Shoulder Taps", time: "20 تكرار", desc: "ملامسة الكتف المعاكس في وضعية بلانك" } ], benefit: "نحت الذراعين والصدر والثبات", note: "التحكم يولد القوة." },
+      17: { title: "يوم التحدي", exercises: [ { name: "Jump Lunges", time: "10 لكل رجل", desc: "قفزات بتبديل القدمين في وضعية الطعن" }, { name: "Push-up to Downward Dog", time: "8 مرات", desc: "دمج تمرين الضغط مع تمدد الكتف" } ], benefit: "تمارين متعددة الزوايا لزيادة القدرة", note: "أنت أقوى مما تظن." },
+      18: { title: "مرونة عميقة", exercises: [ { name: "Lizard Stretch", time: "30 ثانية لكل جهة", desc: "فتح الورك مع تمدد الساق الخلفية" }, { name: "Seated Twist", time: "20 ثانية لكل جهة", desc: "لف الجذع من وضعية الجلوس" } ], benefit: "تحرير المفاصل وزيادة نطاق الحركة", note: "دع جسدك يتنفس." },
+      19: { title: "تحدي الاتزان", exercises: [ { name: "Single-leg Deadlift", time: "10 لكل رجل", desc: "انحناء على رجل واحدة نحو الأرض مع مد الذراع" }, { name: "Clock Reach", time: "1 دقيقة", desc: "لمس مواقع تخيلية على شكل ساعة أثناء الوقوف" } ], benefit: "تحفيز التناسق الحركي بدقة", note: "كل توازن هو انتصار صغير." },
+      20: { title: "العودة إلى التنفس", exercises: [ { name: "Box Breathing", time: "2 دقائق", desc: "تنفس منظم بأربع مراحل متساوية" }, { name: "Forward Fold", time: "30 ثانية", desc: "انحناء للأمام من وضعية الوقوف" } ], benefit: "تصفية ذهنية واسترخاء عضلي بعد المجهود", note: "كل نهاية تعني بداية جديدة." },
+      21: { title: "النهائي الأسطوري", exercises: [ { name: "Shadow Boxing", time: "1 دقيقة × 3 جولات", desc: "لكمات هوائية سريعة مع حركة قدمين" }, { name: "Full-body Plank Hold", time: "30 ثانية", desc: "ثبات كامل في وضعية بلانك" } ], benefit: "دمج كل القدرات التي بنيتها خلال التحدي", note: "لقد أنهيت التحدي... أنت خارق!" }
+    }; // سيملأ لاحقًا بكود فعلي (نتركه كما هو)
+
+    function resetProgress() {
+      for (let i = 1; i <= TOTAL_DAYS; i++) {
+        localStorage.removeItem(`day${i}_done`);
+        localStorage.removeItem(`day${i}_note`);
+      }
+      updateProgressDisplay();
+      generateGrid();
+      detailsBox.style.display = 'none';
+      const finalCongrats = document.getElementById("finalCongrats");
+      if (finalCongrats) finalCongrats.style.display = 'none';
+      alert("✨ تم إعادة التحدي من البداية! ابدأ من جديد بكل حماس!");
+    }
+
+    function updateProgressDisplay() {
+      let done = 0;
+      for (let i = 1; i <= TOTAL_DAYS; i++) {
+        if (localStorage.getItem(`day${i}_done`) === 'true') done++;
+      }
+      const percent = Math.round((done / TOTAL_DAYS) * 100);
+      const offset = 282.6 - (282.6 * done / TOTAL_DAYS);
+      if (progressCircle) progressCircle.style.strokeDashoffset = offset;
+      if (progressText) progressText.textContent = `${percent}%`;
+      const bar = document.getElementById("progressBar");
+      if (bar) bar.style.width = percent + "%";
+      const percentText = document.getElementById("progressPercent");
+      if (percentText) percentText.textContent = percent + "%";
+      if (done === TOTAL_DAYS) {
+        const finalCongrats = document.getElementById("finalCongrats");
+        if (finalCongrats) finalCongrats.style.display = "block";
+        alert("🏁 تهانينا! لقد أكملت التحدي بالكامل! أنت أسطورة 💪");
+      }
+    }
+
+    function showDetails(day) {
+      const data = dayDetails[day];
+      const isDone = localStorage.getItem(`day${day}_done`) === 'true';
+      const note = localStorage.getItem(`day${day}_note`) || '';
+
+      let html = `<h2>اليوم ${day} – ${data.title}</h2>` +
+        `<img src='images/${day}.png' alt='صورة التمرين ${day}'>` +
+        `<video src='videos/${day}.mp4' controls></video>`;
+      data.exercises.forEach(ex => {
+        html += `<p><strong>${ex.name}</strong> – ${ex.time}<br><em>${ex.desc}</em></p>`;
+      });
+      html += `<p><strong>🎯 الفائدة:</strong> ${data.benefit}</p>`;
+      html += `<textarea placeholder="ملاحظاتك لليوم ${day}" oninput="autoSaveNote(${day}, this.value)">${note}</textarea>`;
+      html += `<button class="btn-complete" onclick="markDone(${day})">${isDone ? '✅ تم الإنجاز' : '✔️ أتممت التمرين؟'}</button>`;
+      html += `<p><em>${data.note}</em></p>`;
+      html += `<div class="close-btn" onclick="detailsBox.style.display='none'">إغلاق</div>`;
+
+      detailsBox.innerHTML = html;
+      detailsBox.style.display = 'block';
+      window.scrollTo({ top: detailsBox.offsetTop, behavior: 'smooth' });
+    }
+
+    const dailyAlerts = [null,
+"كل بداية عظيمة تبدأ بخطوة، وأنت بدأت اليوم! ✨",
+"يوم ثاني من التحدي، طاقتك تبهرني! 💥",
+"استمر، فالثالثة تفتح لك آفاقًا جديدة! 🚀",
+"اليوم الرابع؟ هذا إنجاز حقيقي! 🌟",
+"منتصف الأسبوع وأنت ما زلت صامدًا! 👊",
+"من يتوازن اليوم، يطير غدًا! 🕊️",
+"سبعة أيام من الانضباط، أنت قدوة! 🎯",
+"الأسبوع الثاني بدأ، احرق السلبية! 🔥",
+"عضلاتك الآن تنحت شخصية جديدة! 🏋️",
+"منتصف التحدي! استعد لصعود جديد! ⛰️",
+"اليوم 11؟ يعني أنك لست هاويًا، بل محترفًا! 🧠",
+"أسبوع الحسم بدأ، لا تنظر للخلف! 🏁",
+"تركيزك اليوم يصنع فارق الغد! 🎯",
+"تمدّد اليوم يمهّد لنجاحات الغد! 🌈",
+"أنت تحرق المسافات نحو هدفك! 🔥",
+"الجزء العلوي يشكرك! 💪",
+"اليوم 17! هذا تحدي الأبطال! 🦸",
+"كل عضلة الآن تقول لك: شكرًا! 💚",
+"توازن وقوة في تناغم رائع! ⚖️",
+"ما تبقى إلا لمسة أخيرة! استعد! 🏆",
+"أنت خارق... فعلًا خارق! 🎉",
+];
+
+    function autoSaveNote(day, text) {
+      localStorage.setItem(`day${day}_note`, text);
+    }
+
+
+function markDone(day) {
+  const currentState = localStorage.getItem(`day${day}_done`) === 'true';
+  const newState = !currentState;
+  localStorage.setItem(`day${day}_done`, newState ? 'true' : 'false');
+
+  const textarea = document.querySelector(`#detailsBox textarea`).value;
+  localStorage.setItem(`day${day}_note`, textarea);
+
+  updateProgressDisplay();
+  showDetails(day);
+  generateGrid();
+
+  if (newState) alert(dailyAlerts[day]);
+}
+
+
+    function generateGrid() {
+      daysGrid.innerHTML = '';
+      for (let i = 1; i <= TOTAL_DAYS; i++) {
+        const isLocked = (i > 1 && !localStorage.getItem(`day${i - 1}_done`));
+        const isDone = localStorage.getItem(`day${i}_done`) === 'true';
+        const card = document.createElement("div");
+        let levelClass = i <= 7 ? 'border-easy' : i <= 14 ? 'border-medium' : 'border-hard';
+        card.className = `card ${levelClass}${isLocked ? ' locked' : ''}${isDone ? ' done' : ''}`;
+        card.style.backgroundColor = isDone ? '#e1f5fe' : 'white';
+        card.innerHTML = `<div style="font-size:1.8em;">💪</div><h2>اليوم ${i}</h2><div class="level">${i <= 7 ? '💧 سهل' : i <= 14 ? '🔥 متوسط' : '⚡ صعب'}</div>`;
+        if (!isLocked && dayDetails[i]) card.onclick = () => showDetails(i);
+        daysGrid.appendChild(card);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      generateGrid();
+      updateProgressDisplay();
+    });
+  
+    const finalCongrats = document.getElementById("finalCongrats");
+    if (finalCongrats && done < TOTAL_DAYS) finalCongrats.style.display = "none";</script>
+<div id="finalCongrats" style="display:none; text-align:center; margin: 40px auto; max-width: 600px; background: #d0f8ce; border-radius: 20px; padding: 30px; font-size: 1.2em; box-shadow: 0 4px 12px rgba(0,0,0,0.1); line-height: 1.8;">🎉 أحسنت! لقد أنجزت تحدي الـ 21 يوم بنجاح مذهل! هذا الإنجاز دليل على التزامك وقوتك... استمر فأنت مصدر إلهام! 💪</div><footer style="background: linear-gradient(to bottom, #f9f9f9, #e0f7fa); padding:30px 20px; text-align:center; font-size:0.95em; color:#2c3e50; margin-top:40px;">
+<p>تواصل معنا عبر واتساب: 
+    <a href="https://wa.me/966546474708" style="color:#0288d1; text-decoration:underline;" target="_blank">اضغط هنا</a>
+</p>
+<p>🤍 بتصميم واهتمام من فريق صندوق</p>
+<p>© 2025 جميع الحقوق محفوظة لمتجر صندوق</p>
+</footer>
+<style>
+#helpButton {
+  position: fixed;
+  right: 16px;
+  bottom: 90px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #00bcd4, #0097a7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 22px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: background 0.3s;
+  z-index: 999;
+}
+#helpButton:hover {
+  background: linear-gradient(135deg, #4dd0e1, #00acc1);
+}
+
+#helpBox {
+  display: none;
+  position: fixed;
+  right: 20px;
+  bottom: 150px;
+  width: 280px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 999;
+  font-size: 0.95em;
+  color: #333;
+  line-height: 1.6;
+}
+#helpBoxClose {
+  margin-top: 10px;
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  float: left;
+}
+</style>
+<button id="helpButton" style="" title="تعليمات">💡</button>
+<div id="helpBox">
+<strong>طريقة الاستخدام:</strong>
+<ul style="padding-right: 20px;">
+<li>اضغط على أي يوم لعرض التمارين.</li>
+<li>شاهد الفيديو أو الصورة ونفذ التمارين.</li>
+<li>سجل إنجازك بالضغط على "✔️ أتممت التمرين؟"</li>
+<li>تابع تقدمك عبر شريط الإنجاز.</li>
+<li>عند إنجاز 21 يوم، ستظهر لك تهنئة خاصة 🎉</li>
+</ul>
+<button id="helpBoxClose" style="">إغلاق</button>
+</div>
+<script>
+document.getElementById("helpButton").addEventListener("click", function() {
+  const box = document.getElementById("helpBox");
+  box.style.display = box.style.display === "block" ? "none" : "block";
+});
+
+document.getElementById("helpBoxClose").addEventListener("click", function() {
+  document.getElementById("helpBox").style.display = "none";
+});
+</script>
+<script>
+function toggleLibrary() {
+  var lib = document.getElementById("exerciseLibrary");
+  if (lib.style.display === "none" || lib.style.display === "") {
+    lib.style.display = "block";
+  } else {
+    lib.style.display = "none";
+  }
+}
+</script><script>
+function scrollToGrid() {
+  const grid = document.getElementById("daysGrid");
+  if (grid) window.scrollTo({ top: grid.offsetTop - 20, behavior: 'smooth' });
+}
+</script><script>
+document.addEventListener("DOMContentLoaded", () => {
+  const TOTAL_DAYS = 21;
+
+  let done = 0;
+  let latestDone = 0;
+  let available = 1;
+  let lastNote = "";
+
+  for (let i = 1; i <= TOTAL_DAYS; i++) {
+    const doneState = localStorage.getItem(`day${i}_done`) === 'true';
+    const note = localStorage.getItem(`day${i}_note`);
+
+    if (doneState) {
+      done++;
+      latestDone = i;
+    }
+
+    if (note && note.trim() !== "") {
+      lastNote = `اليوم ${i} – ${note}`;
+    }
+  }
+
+  for (let i = 2; i <= TOTAL_DAYS; i++) {
+    if (localStorage.getItem(`day${i - 1}_done`) === 'true') available++;
+    else break;
+  }
+
+  const percent = Math.round((done / TOTAL_DAYS) * 100);
+  const quoteList = [
+    "العضلة لا تقوى إلا بالتحدي!",
+    "استمر، التكرار يصنع الفرق.",
+    "الصبر مع الجهد = نتائج!",
+    "كل حركة تقربك لهدفك.",
+    "حتى أصعب الأيام تبنيك."
+  ];
+
+  const get = id => document.getElementById(id);
+  if (get("progressValue")) get("progressValue").textContent = `📈 إنجازك: ${percent}%`;
+  if (get("currentDay")) get("currentDay").textContent = latestDone > 0 ? `✅ وصلت إلى: اليوم ${latestDone}` : "✅ لم تبدأ بعد";
+  if (get("availableDays")) get("availableDays").textContent = `🔓 أيام جاهزة: ${available}`;
+  if (get("lastNote")) get("lastNote").textContent = lastNote || "لا توجد ملاحظات بعد.";
+  if (get("randomQuote")) {
+    const pick = quoteList[Math.floor(Math.random() * quoteList.length)];
+    get("randomQuote").textContent = `💬 ${pick}`;
+  }
+});
+</script><script>
+function toggleSidebar() {
+  const panel = document.getElementById("smartPanel");
+  if (panel) {
+    panel.classList.toggle("open");
+  }
+}
+</script></body>
+</html>
